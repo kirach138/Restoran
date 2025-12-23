@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using WpfApp1.classes_bd;
+using System.Data.Entity;
 
 namespace WpfApp1.models
 {
@@ -75,7 +76,9 @@ namespace WpfApp1.models
         {
             try
             {
-                IQueryable<Booking> query = _context.Booking;
+                IQueryable<Booking> query = _context.Booking
+                    .Include(b => b.Client) // Добавьте Include для Client
+                    .Include(b => b.Table); // И для Table тоже
 
                 // Применяем сортировку
                 switch (CurrentSortProperty)
@@ -291,4 +294,11 @@ namespace WpfApp1.models
     {"По убыванию", "DESC"}
 };
     }
+
+
+    //public class BookingDisplayItem : Booking
+    //{
+    //    public string ClientName => Client?.User?.Name ?? "Не указан";
+
+    //}
 }

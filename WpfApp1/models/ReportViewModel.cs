@@ -4,8 +4,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using WpfApp1.classes_bd;
+using WpfApp1.Exporters;
 
 namespace WpfApp1.models
 {
@@ -71,6 +73,8 @@ namespace WpfApp1.models
         public ICommand GenerateReportCommand { get; }
         public ICommand ExportToExcelCommand { get; }
 
+        public ICommand ExportToPdfCommand { get; }
+
         public ReportViewModel(Model_R context = null)
         {
             _context = context ?? new Model_R();
@@ -80,6 +84,7 @@ namespace WpfApp1.models
             EndDate = DateTime.Today;
             StartDate = EndDate.AddMonths(-1);
 
+            ExportToPdfCommand = new RelayCommand(ExportToPdf, CanExport);
             GenerateReportCommand = new RelayCommand(GenerateReport);
             ExportToExcelCommand = new RelayCommand(ExportToExcel, CanExport);
         }
@@ -153,6 +158,62 @@ namespace WpfApp1.models
             {
                 System.Windows.MessageBox.Show($"Ошибка при генерации отчета: {ex.Message}\n{ex.InnerException?.Message}",
                     "Ошибка", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        public void ExportToPdf(object parameter)
+        {
+            try
+            {
+                if (!PopularDishes.Any())
+                {
+                    MessageBox.Show("Нет данных для экспорта. Сначала сгенерируйте отчет.",
+                        "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"Отчет_популярные_блюда_{DateTime.Now:yyyy-MM-dd_HHmm}",
+                    DefaultExt = ".pdf",
+                    Filter = "PDF файлы (.pdf)|*.pdf|Все файлы (*.*)|*.*"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    var exporter = new PdfExporter();
+
+                    exporter.ExportToPdf(
+                        reportData: PopularDishes.ToList(),
+                        startDate: StartDate,
+                        endDate: EndDate,
+                        totalRevenue: TotalRevenue,
+                        totalOrders: TotalOrders,
+                        filePath: saveDialog.FileName
+                    );
+
+                    MessageBox.Show($"Отчет успешно экспортирован в PDF!\nФайл: {saveDialog.FileName}",
+                        "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Опционально: открыть файл после сохранения
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = saveDialog.FileName,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch
+                    {
+                        // Если не удалось открыть файл, игнорируем ошибку
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при экспорте в PDF: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

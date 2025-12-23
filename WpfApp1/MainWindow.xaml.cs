@@ -382,16 +382,12 @@ namespace WpfApp1
         {
             W_Admin secondWindow = new W_Admin();
 
-            // Передача данных в новое окно
-            /*secondWindow.DataContext = this.DataContext; */// Передача контекста данных
-                                                             // ИЛИ
-                                                             //secondWindow.SomeProperty = "Значение из главного окна";
+            
 
             // Подписка на событие закрытия окна
             secondWindow.Closed += (s, args) =>
             {
-                // Действия после закрытия окна
-                MessageBox.Show("Второе окно закрыто");
+                
             };
 
             secondWindow.Show();
@@ -401,16 +397,12 @@ namespace WpfApp1
         {
             W_Table secondWindow = new W_Table();
 
-            // Передача данных в новое окно
-            /*secondWindow.DataContext = this.DataContext; */// Передача контекста данных
-                                                             // ИЛИ
-                                                             //secondWindow.SomeProperty = "Значение из главного окна";
+            
 
             // Подписка на событие закрытия окна
             secondWindow.Closed += (s, args) =>
             {
-                // Действия после закрытия окна
-                MessageBox.Show("Второе окно закрыто");
+                
             };
 
             secondWindow.Show();
@@ -419,11 +411,6 @@ namespace WpfApp1
         private void OpenWindowBookingButton_Click(object sender, RoutedEventArgs e)
         {
             W_Booking secondWindow = new W_Booking();
-
-            // Передача данных в новое окно
-            /*secondWindow.DataContext = this.DataContext; */// Передача контекста данных
-                                                             // ИЛИ
-                                                             //secondWindow.SomeProperty = "Значение из главного окна";
 
             // Подписка на событие закрытия окна
             secondWindow.Closed += (s, args) =>
@@ -439,26 +426,16 @@ namespace WpfApp1
         {
             W_Order secondWindow = new W_Order();
 
-            // Передача данных в новое окно
-            /*secondWindow.DataContext = this.DataContext; */// Передача контекста данных
-                                                             // ИЛИ
-                                                             //secondWindow.SomeProperty = "Значение из главного окна";
-
-            // Подписка на событие закрытия окна
+            
             secondWindow.Closed += (s, args) =>
             {
-                // Действия после закрытия окна
-                MessageBox.Show("Второе окно закрыто");
+                
             };
 
             secondWindow.Show();
         }
 
-        //private void ButtonMenu_Click(object sender, RoutedEventArgs e)
-        //{
-        //    MessageBox.Show("Открывается меню", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        //}
-
+        
         private void ButtonOrder_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Заказ оформлен!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);

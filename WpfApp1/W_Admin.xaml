@@ -442,8 +442,8 @@
                                     Binding="{Binding Table.Number}" 
                                     Width="70"/>
                             <DataGridTextColumn Header="Клиент" 
-                                    Binding="{Binding Client.Name, FallbackValue='Не указан'}" 
-                                    Width="120"/>
+                    Binding="{Binding Client.User.Name, FallbackValue='Не указан'}" 
+                    Width="120"/>
                             <DataGridTextColumn Header="Код" 
                                     Binding="{Binding Code}" 
                                     Width="100"/>
@@ -1452,6 +1452,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
+
             <!-- Вкладка Отчеты -->
             <TabItem Header="Отчеты">
                 <Grid>
@@ -1608,19 +1609,20 @@
                                 <TextBlock Text="{Binding ReportVM.EndDate, StringFormat=dd.MM.yyyy}" 
                                FontWeight="Bold" Margin="0,0,20,0"/>
 
-                                <TextBlock Text="Всего записей:" Margin="5,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding ReportVM.PopularDishes.Count}" 
-                               FontWeight="Bold"/>
+                                <!--<TextBlock Text="Всего записей:" Margin="5,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ReportVM.PopularDishes.Count}"--> 
+                               <!--FontWeight="Bold"/>-->
                             </StackPanel>
 
                             <!-- Кнопка экспорта -->
-                            <Button Grid.Column="1" 
-                        Content="Экспорт в Excel" 
-                        Command="{Binding ReportVM.ExportToExcelCommand}"
-                        Margin="5" Padding="10,5" Width="120"/>
+                            <Button Content="Экспорт в PDF" 
+        Command="{Binding ExportToPdfCommand}"
+        Margin="400, 0, 0, 0"
+        Padding="10,5"
+        Width="120"/>
 
                             <!-- Кнопка печати -->
-                            <Button Grid.Column="2" 
+                            <!--<Button Grid.Column="2" 
                         Content="Печать отчета" 
                         Margin="5" Padding="10,5" Width="120">
                                 <Button.ToolTip>
@@ -1628,7 +1630,7 @@
                                         <TextBlock Text="Печать отчета по популярным блюдам"/>
                                     </ToolTip>
                                 </Button.ToolTip>
-                            </Button>
+                            </Button>-->
                         </Grid>
                     </GroupBox>
                 </Grid>
