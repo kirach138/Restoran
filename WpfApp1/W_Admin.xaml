@@ -1,0 +1,1638 @@
+﻿<Window x:Class="WpfApp1.W_Admin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Админ CRUD" Height="700" Width="800">
+
+    <Window.Resources>
+        <!-- Конвертер из bool в Visibility -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- Конвертер для отображения null значений -->
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <local:IndexConverter x:Key="IndexConverter"/>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Общие кнопки -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="Обновить все данные" 
+                    Command="{Binding RefreshAllCommand}"
+                    Margin="0,0,10,0" Padding="10,5"/>
+        </StackPanel>
+
+        <!-- Вкладки -->
+        <TabControl Grid.Row="1">
+            <!-- Вкладка Продукты -->
+            <TabItem Header="Продукты">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель кнопок для продуктов -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить продукт" 
+                                Command="{Binding ProductVM.AddCommand}" 
+                                Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить продукт" 
+                                Command="{Binding ProductVM.DeleteCommand}" 
+                                Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить продукты" 
+                                Command="{Binding ProductVM.SaveCommand}" 
+                                Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Таблица продуктов -->
+                    <DataGrid Grid.Row="1" 
+                              ItemsSource="{Binding ProductVM.Products}" 
+                              SelectedItem="{Binding ProductVM.SelectedProduct}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="False">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Цена" Binding="{Binding Cost, StringFormat=C2}" Width="100"/>
+                            <DataGridTextColumn Header="Количество" Binding="{Binding Count}" Width="80"/>
+                            <DataGridTextColumn Header="Ед. измерения" Binding="{Binding Measure}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Детали продукта -->
+                    <GroupBox Grid.Row="2" Header="Детали продукта" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Наименование:" Grid.Row="0" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding ProductVM.SelectedProduct.Name, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Цена:" Grid.Row="0" Grid.Column="2" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding ProductVM.SelectedProduct.Cost, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Количество:" Grid.Row="1" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding ProductVM.SelectedProduct.Count, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Ед. измерения:" Grid.Row="1" Grid.Column="2" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding ProductVM.SelectedProduct.Measure, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="1" Grid.Column="3" Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Блюда -->
+            <TabItem Header="Блюда">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель кнопок для блюд -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить блюдо" 
+                                Command="{Binding DishVM.AddCommand}" 
+                                Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить блюдо" 
+                                Command="{Binding DishVM.DeleteCommand}" 
+                                Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить блюда" 
+                                Command="{Binding DishVM.SaveCommand}" 
+                                Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Таблица блюд -->
+                    <DataGrid Grid.Row="1" 
+                              ItemsSource="{Binding DishVM.Dishes}" 
+                              SelectedItem="{Binding DishVM.SelectedDish}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="False">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat=C2}" Width="100"/>
+                            <DataGridTextColumn Header="Доступность" Binding="{Binding Availability}" Width="100"/>
+                            <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="200"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Детали блюда -->
+                    <GroupBox Grid.Row="2" Header="Детали блюда" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Название:" Grid.Row="0" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding DishVM.SelectedDish.Name, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Цена:" Grid.Row="0" Grid.Column="2" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding DishVM.SelectedDish.Price, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Доступность:" Grid.Row="1" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding DishVM.SelectedDish.Availability, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Описание:" Grid.Row="2" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Top"/>
+                            <TextBox Text="{Binding DishVM.SelectedDish.Description, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" 
+                                     Margin="5" Height="60" TextWrapping="Wrap"
+                                     AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <!-- Вкладка Состав блюд -->
+            <TabItem Header="Состав блюд">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Выбор блюда -->
+                    <GroupBox Grid.Row="0" Header="Выберите блюдо" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Блюдо:" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox ItemsSource="{Binding DishVM.Dishes}"
+                          DisplayMemberPath="Name"
+                          SelectedItem="{Binding DishProdVM.CurrentDishFilter}"
+                          Width="200" Margin="5"/>
+                            <Button Content="Загрузить состав" 
+                        Command="{Binding DishProdVM.LoadByDishCommand}"
+                        Margin="5" Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Панель кнопок -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить продукт" 
+                    Command="{Binding DishProdVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить продукт" 
+                    Command="{Binding DishProdVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить изменения" 
+                    Command="{Binding DishProdVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Таблица состава -->
+                    <DataGrid Grid.Row="2" 
+                  ItemsSource="{Binding DishProdVM.DishProds}" 
+                  SelectedItem="{Binding DishProdVM.SelectedDishProd}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Блюдо" Binding="{Binding Dish.Name}" Width="150" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Продукт" Width="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.DishProdVM.AvailableProducts, 
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                      DisplayMemberPath="Name"
+                                      SelectedValue="{Binding Productid}"
+                                      SelectedValuePath="ID"
+                                      SelectedItem="{Binding Product, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Количество" Binding="{Binding Count}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Детали записи -->
+                    <GroupBox Grid.Row="3" Header="Детали состава" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Блюдо:" Grid.Row="0" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" 
+                          ItemsSource="{Binding DishProdVM.Dishes}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding DishProdVM.SelectedDishProd.Dishid}"
+                          SelectedItem="{Binding DishProdVM.SelectedDish}"
+                          IsEnabled="False"
+                          Margin="5"/>
+
+                            <TextBlock Text="Продукт:" Grid.Row="0" Grid.Column="2" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="3" 
+                          ItemsSource="{Binding DishProdVM.AvailableProducts}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding DishProdVM.SelectedDishProd.Productid}"
+                          SelectedItem="{Binding DishProdVM.SelectedProduct}"
+                          Margin="5"/>
+
+                            <TextBlock Text="Количество:" Grid.Row="1" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding DishProdVM.SelectedDishProd.Count, UpdateSourceTrigger=PropertyChanged}" 
+                         Grid.Row="1" Grid.Column="1" Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <!-- Вкладка Столики -->
+            <TabItem Header="Столики">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель кнопок для столиков -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить столик" 
+                                Command="{Binding TableVM.AddCommand}" 
+                                Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить столик" 
+                                Command="{Binding TableVM.DeleteCommand}" 
+                                Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить столики" 
+                                Command="{Binding TableVM.SaveCommand}" 
+                                Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Таблица столиков -->
+                    <DataGrid Grid.Row="1" 
+                              ItemsSource="{Binding TableVM.Tables}" 
+                              SelectedItem="{Binding TableVM.SelectedTable}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="False">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="№" Binding="{Binding Number}" Width="50"/>
+                            <DataGridTextColumn Header="Кол-во мест" Binding="{Binding Places}" Width="100"/>
+                            <DataGridTextColumn Header="Цена предоплаты" Binding="{Binding Cost}" Width="200"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Детали столика -->
+                    <GroupBox Grid.Row="2" Header="Детали столика" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="№:" Grid.Row="0" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding TableVM.SelectedTable.Number, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Кол-во мест:" Grid.Row="0" Grid.Column="2" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding TableVM.SelectedTable.Places, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Цена:" Grid.Row="1" Grid.Column="0" 
+                                       Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding TableVM.SelectedTable.Cost, UpdateSourceTrigger=PropertyChanged}" 
+                                     Grid.Row="1" Grid.Column="1" Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <!-- Вкладка Бронирования -->
+            <TabItem Header="Бронирования">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Панель сортировки -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Панель кнопок -->
+                        <RowDefinition Height="*"/>
+                        <!-- Таблица бронирований -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Детали бронирования -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель сортировки -->
+                    <GroupBox Grid.Row="0" Header="Сортировка" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Сортировать по:" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox ItemsSource="{Binding BookingVM.SortOptions}"
+                          SelectedValue="{Binding BookingVM.CurrentSortProperty}"
+                          DisplayMemberPath="Key"
+                          SelectedValuePath="Value"
+                          Width="150" Margin="5"/>
+
+                            <TextBlock Text="Направление:" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox ItemsSource="{Binding BookingVM.SortDirections}"
+                          SelectedValue="{Binding BookingVM.SortDirection}"
+                          DisplayMemberPath="Key"
+                          SelectedValuePath="Value"
+                          Width="120" Margin="5"/>
+
+                            <Button Content="Применить сортировку" 
+                        Command="{Binding BookingVM.SortCommand}"
+                        CommandParameter="{Binding BookingVM.CurrentSortProperty}"
+                        Margin="5" Padding="10,5"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Панель кнопок -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить бронирование" 
+                    Command="{Binding BookingVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить бронирование" 
+                    Command="{Binding BookingVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить бронирования" 
+                    Command="{Binding BookingVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Таблица бронирований -->
+                    <DataGrid Grid.Row="2" 
+                  ItemsSource="{Binding BookingVM.Bookings}" 
+                  SelectedItem="{Binding BookingVM.SelectedBooking}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False"
+                  Margin="0,0,0,10">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Начало" 
+                                    Binding="{Binding Startb, StringFormat=dd.MM.yyyy HH:mm}" 
+                                    Width="120"/>
+                            <DataGridTextColumn Header="Окончание" 
+                                    Binding="{Binding Endb, StringFormat=dd.MM.yyyy HH:mm}" 
+                                    Width="120"/>
+                            <DataGridTextColumn Header="Столик" 
+                                    Binding="{Binding Table.Number}" 
+                                    Width="70"/>
+                            <DataGridTextColumn Header="Клиент" 
+                                    Binding="{Binding Client.Name, FallbackValue='Не указан'}" 
+                                    Width="120"/>
+                            <DataGridTextColumn Header="Код" 
+                                    Binding="{Binding Code}" 
+                                    Width="100"/>
+                            <DataGridTextColumn Header="Сумма" 
+                                    Binding="{Binding Count, StringFormat=C2}" 
+                                    Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Детали бронирования -->
+                    <GroupBox Grid.Row="3" Header="Детали бронирования">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Дата и время начала -->
+                            <TextBlock Text="Начало:" 
+                           Grid.Row="0" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                <DatePicker Width="120" 
+                               SelectedDate="{Binding BookingVM.SelectedBooking.Startb, UpdateSourceTrigger=PropertyChanged}" 
+                               Margin="5,0,0,0"/>
+                                <TextBlock Text="Время:" 
+                               Margin="10,0,5,0" 
+                               VerticalAlignment="Center"/>
+                                <TextBox Width="80" 
+                            Text="{Binding BookingVM.SelectedBooking.Startb, StringFormat=HH:mm, UpdateSourceTrigger=PropertyChanged}" 
+                            Margin="0,0,5,0"/>
+                            </StackPanel>
+
+                            <!-- Дата и время окончания -->
+                            <TextBlock Text="Окончание:" 
+                           Grid.Row="1" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                                <DatePicker Width="120" 
+                               SelectedDate="{Binding BookingVM.SelectedBooking.Endb, UpdateSourceTrigger=PropertyChanged}" 
+                               Margin="5,0,0,0"/>
+                                <TextBlock Text="Время:" 
+                               Margin="10,0,5,0" 
+                               VerticalAlignment="Center"/>
+                                <TextBox Width="80" 
+                            Text="{Binding BookingVM.SelectedBooking.Endb, StringFormat=HH:mm, UpdateSourceTrigger=PropertyChanged}" 
+                            Margin="0,0,5,0"/>
+                            </StackPanel>
+
+                            <!-- Столик и клиент -->
+                            <TextBlock Text="Столик:" 
+                           Grid.Row="0" Grid.Column="2" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="3" 
+                          ItemsSource="{Binding BookingVM.AvailableTables}"
+                          DisplayMemberPath="Number"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding BookingVM.SelectedBooking.Tableid}"
+                          Margin="5"/>
+
+                            <TextBlock Text="Клиент:" 
+                           Grid.Row="1" Grid.Column="2" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="1" Grid.Column="3" 
+                          ItemsSource="{Binding BookingVM.AvailableClients}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding BookingVM.SelectedBooking.Clientid}"
+                          IsEditable="True"
+                          Margin="5"/>
+
+                            <!-- Код и сумма -->
+                            <TextBlock Text="Код бронирования:" 
+                           Grid.Row="2" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" 
+                         Text="{Binding BookingVM.SelectedBooking.Code, UpdateSourceTrigger=PropertyChanged}" 
+                         Margin="5"/>
+
+                            <TextBlock Text="Сумма:" 
+                           Grid.Row="2" Grid.Column="2" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="2" Grid.Column="3" 
+                         Text="{Binding BookingVM.SelectedBooking.Count, UpdateSourceTrigger=PropertyChanged}" 
+                         Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <!-- Вкладка Типы пользователей -->
+            <TabItem Header="Типы пользователей">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить тип" 
+                    Command="{Binding UserTypeVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить тип" 
+                    Command="{Binding UserTypeVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить типы" 
+                    Command="{Binding UserTypeVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding UserTypeVM.UserTypes}" 
+                  SelectedItem="{Binding UserTypeVM.SelectedUserType}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали типа пользователя" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Название:" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding UserTypeVM.SelectedUserType.Name, UpdateSourceTrigger=PropertyChanged}" 
+                         Grid.Column="1" Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Пользователи -->
+            <TabItem Header="Пользователи">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить пользователя" 
+                    Command="{Binding UserVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить пользователя" 
+                    Command="{Binding UserVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить пользователей" 
+                    Command="{Binding UserVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding UserVM.Users}" 
+                  SelectedItem="{Binding UserVM.SelectedUser}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="100"/>
+                            <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="120"/>
+                            <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="100"/>
+                            <DataGridTextColumn Header="Тип" Binding="{Binding User_type.Name}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали пользователя" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Логин:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                            <TextBox Text="{Binding UserVM.SelectedUser.Login}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Имя:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                            <TextBox Text="{Binding UserVM.SelectedUser.Name}" Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Пароль:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                            <TextBox Text="{Binding UserVM.SelectedUser.Password}" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Телефон:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                            <TextBox Text="{Binding UserVM.SelectedUser.Phone}" Grid.Row="1" Grid.Column="3" Margin="5"/>
+
+                            <TextBlock Text="Тип пользователя:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" 
+                          ItemsSource="{Binding UserVM.UserTypes}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding UserVM.SelectedUser.Type}"
+                          Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Клиенты -->
+            <TabItem Header="Клиенты">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить клиента" 
+                    Command="{Binding ClientVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить клиента" 
+                    Command="{Binding ClientVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить клиентов" 
+                    Command="{Binding ClientVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding ClientVM.Clients}" 
+                  SelectedItem="{Binding ClientVM.SelectedClient}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Баланс" Binding="{Binding Count, StringFormat=C2}" Width="100"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding User.Name, FallbackValue='Не указан'}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали клиента" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Баланс:" Grid.Column="0" Margin="5"/>
+                            <TextBox Text="{Binding ClientVM.SelectedClient.Count}" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Пользователь:" Grid.Column="2" Margin="5"/>
+                            <ComboBox Grid.Column="3" 
+                          ItemsSource="{Binding ClientVM.AvailableUsers}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding ClientVM.SelectedClient.Userid}"
+                          Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Администраторы -->
+            <TabItem Header="Администраторы">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить администратора" 
+                    Command="{Binding AdminVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить администратора" 
+                    Command="{Binding AdminVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить администраторов" 
+                    Command="{Binding AdminVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding AdminVM.Admins}" 
+                  SelectedItem="{Binding AdminVM.SelectedAdmin}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding User.Name, FallbackValue='Не указан'}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали администратора" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Пользователь:" Grid.Column="0" Margin="5"/>
+                            <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding AdminVM.AvailableUsers}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding AdminVM.SelectedAdmin.Userid}"
+                          Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Повара -->
+            <TabItem Header="Повара">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить повара" 
+                    Command="{Binding CookVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить повара" 
+                    Command="{Binding CookVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить поваров" 
+                    Command="{Binding CookVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding CookVM.Cooks}" 
+                  SelectedItem="{Binding CookVM.SelectedCook}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding User.Name, FallbackValue='Не указан'}" Width="150"/>
+                            <DataGridTextColumn Header="Специализация" Binding="{Binding Specialization}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали повара" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Пользователь:" Grid.Column="0" Margin="5"/>
+                            <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding CookVM.AvailableUsers}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding CookVM.SelectedCook.Userid}"
+                          Margin="5"/>
+
+                            <TextBlock Text="Специализация:" Grid.Column="2" Margin="5"/>
+                            <TextBox Text="{Binding CookVM.SelectedCook.Specialization}" Grid.Column="3" Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Доставщики -->
+            <TabItem Header="Доставщики">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить доставщика" 
+                    Command="{Binding DeliveryVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить доставщика" 
+                    Command="{Binding DeliveryVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить доставщиков" 
+                    Command="{Binding DeliveryVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding DeliveryVM.Deliveries}" 
+                  SelectedItem="{Binding DeliveryVM.SelectedDelivery}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding User.Name, FallbackValue='Не указан'}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали доставщика" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Пользователь:" Grid.Column="0" Margin="5"/>
+                            <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding DeliveryVM.AvailableUsers}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding DeliveryVM.SelectedDelivery.Userid}"
+                          Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Официанты -->
+            <TabItem Header="Официанты">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить официанта" 
+                    Command="{Binding WaiterVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить официанта" 
+                    Command="{Binding WaiterVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить официантов" 
+                    Command="{Binding WaiterVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding WaiterVM.Waiters}" 
+                  SelectedItem="{Binding WaiterVM.SelectedWaiter}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding User.Name, FallbackValue='Не указан'}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали официанта" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Пользователь:" Grid.Column="0" Margin="5"/>
+                            <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding WaiterVM.AvailableUsers}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding WaiterVM.SelectedWaiter.Userid}"
+                          Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Скидки -->
+            <TabItem Header="Скидки">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить скидку" 
+                    Command="{Binding DiscountVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить скидку" 
+                    Command="{Binding DiscountVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить скидки" 
+                    Command="{Binding DiscountVM.SaveCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding DiscountVM.Discounts}" 
+                  SelectedItem="{Binding DiscountVM.SelectedDiscount}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Значение (%)" Binding="{Binding Value}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали скидки" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Название:" Grid.Column="0" Margin="5"/>
+                            <TextBox Text="{Binding DiscountVM.SelectedDiscount.Name}" Grid.Column="1" Margin="5"/>
+
+                            <TextBlock Text="Значение (%):" Grid.Column="2" Margin="5"/>
+                            <TextBox Text="{Binding DiscountVM.SelectedDiscount.Value}" Grid.Column="3" Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Заказы -->
+            <!-- Вкладка Заказы -->
+            <TabItem Header="Заказы">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить заказ" 
+                    Command="{Binding OrderVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить заказ" 
+                    Command="{Binding OrderVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить заказы" 
+                    Command="{Binding OrderVM.SaveCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Обновить" 
+                    Command="{Binding OrderVM.RefreshCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding OrderVM.Orders}" 
+                  SelectedItem="{Binding OrderVM.SelectedOrder}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False"
+                  Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Время" 
+                                    Binding="{Binding Time, StringFormat=dd.MM.yyyy HH:mm}" 
+                                    Width="120"/>
+                            <DataGridTextColumn Header="Клиент" 
+                                    Binding="{Binding Client.User.Name, FallbackValue='Не указан'}" 
+                                    Width="150"/>
+                            <DataGridTextColumn Header="Статус" 
+                                    Binding="{Binding Status.Name, FallbackValue='Не указан'}" 
+                                    Width="100"/>
+                            <DataGridTextColumn Header="Сумма" 
+                                    Binding="{Binding Count, StringFormat=C2}" 
+                                    Width="100"/>
+                            <DataGridTextColumn Header="Адрес" 
+                                    Binding="{Binding Adress, FallbackValue='Не указан'}" 
+                                    Width="150"/>
+                            <!-- Добавлен столбец официанта -->
+                            <DataGridTextColumn Header="Официант" 
+                                    Binding="{Binding Waiter.User.Name, FallbackValue='Не назначен'}" 
+                                    Width="120"/>
+                            <!-- Добавлен столбец доставщика -->
+                            <DataGridTextColumn Header="Доставщик" 
+                                    Binding="{Binding Delivery.User.Name, FallbackValue='Не назначен'}" 
+                                    Width="120"/>
+                            <!-- Добавлен столбец бронирования -->
+                            <DataGridTextColumn Header="Бронь" 
+                                    Binding="{Binding Booking.Table.Number, FallbackValue='Нет'}" 
+                                    Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <GroupBox Grid.Row="2" Header="Детали заказа" Margin="0,10,0,0">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Время заказа -->
+                            <TextBlock Text="Время:" Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <DatePicker Width="120" 
+                                SelectedDate="{Binding OrderVM.SelectedOrder.Time, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="5,0,5,0"/>
+                                <TextBlock Text="Время:" Margin="5,0,5,0" VerticalAlignment="Center"/>
+                                <TextBox Width="80" 
+                             Text="{Binding OrderVM.SelectedOrder.Time, StringFormat=HH:mm, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,5,0"/>
+                            </StackPanel>
+
+                            <!-- Клиент -->
+                            <TextBlock Text="Клиент:" Grid.Row="0" Grid.Column="2" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="3" 
+                          ItemsSource="{Binding OrderVM.AvailableClients}"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding OrderVM.SelectedOrder.Clientid}"
+                          IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding User.Name}" FontWeight="Bold" Margin="0,0,5,0"/>
+                                            <TextBlock Text="(ID: "/>
+                                            <TextBlock Text="{Binding ID}"/>
+                                            <TextBlock Text=")"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Статус -->
+                            <TextBlock Text="Статус:" Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" 
+                          ItemsSource="{Binding OrderVM.AvailableStatuses}"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding OrderVM.SelectedOrder.Statusid}"
+                          IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Официант -->
+                            <TextBlock Text="Официант:" Grid.Row="1" Grid.Column="2" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="1" Grid.Column="3" 
+                          ItemsSource="{Binding OrderVM.AvailableWaiters}"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding OrderVM.SelectedOrder.Waiterid}"
+                          IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding User.Name, FallbackValue='Не указан'}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Доставщик -->
+                            <TextBlock Text="Доставщик:" Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" 
+                          ItemsSource="{Binding OrderVM.AvailableDeliveries}"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding OrderVM.SelectedOrder.Deliveryid}"
+                          IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding User.Name, FallbackValue='Не указан'}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Бронь -->
+                            <TextBlock Text="Бронь:" Grid.Row="2" Grid.Column="2" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="2" Grid.Column="3" 
+                          ItemsSource="{Binding OrderVM.AvailableBookings}"
+                          SelectedValuePath="ID"
+                          SelectedValue="{Binding OrderVM.SelectedOrder.Bookingid}"
+                          IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                <Run Text="Бронь #"/>
+                                <Run Text="{Binding ID}"/>
+                                <Run Text=" (Стол: "/>
+                                <Run Text="{Binding Table.Number}"/>
+                                <Run Text=")"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Сумма -->
+                            <TextBlock Text="Сумма:" Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" 
+                         Text="{Binding OrderVM.SelectedOrder.Count, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                         Margin="5"/>
+
+                            <!-- Адрес -->
+                            <TextBlock Text="Адрес:" Grid.Row="3" Grid.Column="2" Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="3" Grid.Column="3" 
+                         Text="{Binding OrderVM.SelectedOrder.Adress, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding OrderVM.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}"
+                         Margin="5"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <!-- Вкладка Блюда в заказах -->
+            <TabItem Header="Блюда в заказах">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Выбор клиента -->
+                    <GroupBox Grid.Row="0" Header="Выбор клиента" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Клиент:" Grid.Row="0" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" 
+                          ItemsSource="{Binding OrderDishVM.AvailableClients}"
+                          SelectedItem="{Binding OrderDishVM.SelectedClient}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding User.Name}" FontWeight="Bold" Margin="0,0,5,0"/>
+                                            <TextBlock Text="(ID: "/>
+                                            <TextBlock Text="{Binding ID}"/>
+                                            <TextBlock Text=")"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <TextBlock Text="Баланс:" Grid.Row="0" Grid.Column="2" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="3" 
+                           Text="{Binding OrderDishVM.SelectedClient.Count, StringFormat=C2}"
+                           Margin="5" VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Всего заказов:" Grid.Row="1" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" 
+                           Text="{Binding OrderDishVM.ClientOrders.Count}"
+                           Margin="5" VerticalAlignment="Center"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Выбор заказа -->
+                    <GroupBox Grid.Row="1" Header="Заказы клиента" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Заказ:" Grid.Column="0" Margin="5" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="1" 
+                          ItemsSource="{Binding OrderDishVM.ClientOrders}"
+                          SelectedItem="{Binding OrderDishVM.SelectedOrder}"
+                          Margin="5">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Заказ #"/>
+                                            <TextBlock Text="{Binding ID}" FontWeight="Bold" Margin="0,0,5,0"/>
+                                            <TextBlock Text=" от "/>
+                                            <TextBlock Text="{Binding Time, StringFormat=dd.MM.yyyy HH:mm}" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Статус: "/>
+                                            <TextBlock Text="{Binding Status.Name}" Foreground="Blue" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Сумма: "/>
+                                            <TextBlock Text="{Binding Count, StringFormat=C2}" Foreground="Green"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <TextBlock Text="Статус:" Grid.Column="2" Margin="5" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" 
+                           Text="{Binding OrderDishVM.SelectedOrder.Status.Name, FallbackValue='Не выбран'}"
+                           Margin="5" VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Сумма:" Grid.Column="4" Margin="5" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" 
+                           Text="{Binding OrderDishVM.SelectedOrder.Count, StringFormat=C2, FallbackValue='0.00'}"
+                           Margin="5" VerticalAlignment="Center"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Панель кнопок -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Добавить блюдо" 
+                    Command="{Binding OrderDishVM.AddCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Удалить блюдо" 
+                    Command="{Binding OrderDishVM.DeleteCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Сохранить изменения" 
+                    Command="{Binding OrderDishVM.SaveCommand}" 
+                    Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Обновить данные" 
+                    Command="{Binding OrderDishVM.RefreshCommand}" 
+                    Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Таблица блюд в заказе -->
+                    <DataGrid Grid.Row="3" 
+                  ItemsSource="{Binding OrderDishVM.OrderDishes}" 
+                  SelectedItem="{Binding OrderDishVM.SelectedOrderDish}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False"
+                  Margin="0,0,0,10">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+
+                            <DataGridTemplateColumn Header="Блюдо" Width="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.OrderDishVM.AvailableDishes, 
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                      SelectedValue="{Binding Dishid}"
+                                      SelectedValuePath="ID"
+                                      SelectedItem="{Binding Dish, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}"/>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Количество" Width="80">
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="Count" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveNumberValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Цена за шт." 
+                                    Binding="{Binding Dish.Price, StringFormat=C2}" 
+                                    Width="100" IsReadOnly="True"/>
+
+                            <DataGridTemplateColumn Header="Скидка" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.OrderDishVM.AvailableDiscounts, 
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                      SelectedValue="{Binding Discounttype}"
+                                      SelectedValuePath="ID"
+                                      SelectedItem="{Binding Discount, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Name}"/>
+                                                        <TextBlock Text=" ("/>
+                                                        <TextBlock Text="{Binding Value}"/>
+                                                        <TextBlock Text="%)"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Повар" Width="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.OrderDishVM.AvailableCooks, 
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                                      SelectedValue="{Binding Cookid}"
+                                      SelectedValuePath="ID"
+                                      SelectedItem="{Binding Cook, UpdateSourceTrigger=PropertyChanged}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding User.Name, FallbackValue='Не указан'}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Стоимость" 
+                                    Binding="{Binding Cost, StringFormat=C2}" 
+                                    Width="100" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Статистика и детали -->
+                    <GroupBox Grid.Row="4" Header="Статистика и детали">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Статистика -->
+                            <TextBlock Text="Всего блюд:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" 
+                           Text="{Binding OrderDishVM.TotalDishes, FallbackValue=0}" 
+                           Margin="5" FontWeight="Bold"/>
+
+                            <TextBlock Text="Общая стоимость:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="3" 
+                           Text="{Binding OrderDishVM.TotalCost, StringFormat=C2, FallbackValue='0.00'}" 
+                           Margin="5" FontWeight="Bold" Foreground="Green"/>
+
+                            <TextBlock Text="Средняя скидка:" Grid.Row="0" Grid.Column="4" Margin="5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="5" 
+                           Text="{Binding OrderDishVM.AverageDiscount, StringFormat={}{0:F1}%, FallbackValue='0%'}" 
+                           Margin="5" FontWeight="Bold"/>
+
+                            <!-- Детали выбранного блюда -->
+                            <TextBlock Text="Выбранное блюдо:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5"
+                           Text="{Binding OrderDishVM.SelectedOrderDish.Dish.Name, FallbackValue='Не выбрано'}" 
+                           Margin="5" FontStyle="Italic"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <!-- Вкладка Отчеты -->
+            <TabItem Header="Отчеты">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Заголовок -->
+                    <TextBlock Grid.Row="0" Text="Отчет по популярным блюдам" 
+                   FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                    <!-- Панель фильтров -->
+                    <GroupBox Grid.Row="1" Header="Параметры отчета" Margin="0,0,0,10">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Период отчета -->
+                            <TextBlock Text="Период с:" Grid.Row="0" Grid.Column="0" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <DatePicker Grid.Row="0" Grid.Column="1" 
+                            SelectedDate="{Binding ReportVM.StartDate, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="5" Width="120"/>
+
+                            <TextBlock Text="по:" Grid.Row="0" Grid.Column="2" 
+                           Margin="5" VerticalAlignment="Center"/>
+                            <DatePicker Grid.Row="0" Grid.Column="3" 
+                            SelectedDate="{Binding ReportVM.EndDate, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="5" Width="120"/>
+
+                            <!-- Кнопки управления -->
+                            <Button Grid.Row="0" Grid.Column="4" 
+                        Content="Сгенерировать отчет" 
+                        Command="{Binding ReportVM.GenerateReportCommand}"
+                        Margin="5" Padding="10,5" Width="150"/>
+
+                            <!-- Статистика -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" 
+                            Orientation="Horizontal" Margin="5">
+                                <TextBlock Text="Всего заказов за период:" 
+                               Margin="5,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ReportVM.TotalOrders}" 
+                               FontWeight="Bold" Margin="0,0,20,0"/>
+
+                                <TextBlock Text="Общая выручка:" 
+                               Margin="5,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ReportVM.TotalRevenue, StringFormat=C2}" 
+                               FontWeight="Bold" Foreground="Green"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Таблица отчета -->
+                    <DataGrid Grid.Row="2" 
+                  ItemsSource="{Binding ReportVM.PopularDishes}" 
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <!-- Рейтинг -->
+                            <DataGridTextColumn Header="#" Width="40">
+                                <DataGridTextColumn.Binding>
+                                    <Binding>
+                                        <Binding.Converter>
+                                            <local:IndexConverter/>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Блюдо" 
+                                    Binding="{Binding DishName}" 
+                                    Width="*"/>
+
+                            <DataGridTextColumn Header="Цена" 
+                                    Binding="{Binding FormattedPrice}" 
+                                    Width="80"/>
+
+                            <DataGridTextColumn Header="Кол-во заказов" 
+                                    Binding="{Binding OrderCount}" 
+                                    Width="100"/>
+
+                            <DataGridTextColumn Header="Продано шт." 
+                                    Binding="{Binding TotalQuantity}" 
+                                    Width="90"/>
+
+                            <DataGridTextColumn Header="Среднее в заказе" 
+                                    Binding="{Binding FormattedAverage}" 
+                                    Width="110"/>
+
+                            <DataGridTextColumn Header="Выручка" 
+                                    Binding="{Binding FormattedRevenue}" 
+                                    Width="100"/>
+
+                            <DataGridTextColumn Header="Доля от общего" 
+                                    Binding="{Binding FormattedPercentage}" 
+                                    Width="100">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Index}" Value="0">
+                                        <Setter Property="Background" Value="#FFD4FFD4"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Index}" Value="1">
+                                        <Setter Property="Background" Value="#FFE8FFE8"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Index}" Value="2">
+                                        <Setter Property="Background" Value="#FFF4FFF4"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                    </DataGrid>
+
+                    <!-- Панель экспорта и дополнительной информации -->
+                    <GroupBox Grid.Row="3" Header="Экспорт и анализ">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Информация об отчете -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <TextBlock Text="Период отчета:" Margin="5" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ReportVM.StartDate, StringFormat=dd.MM.yyyy}" 
+                               FontWeight="Bold" Margin="0,0,5,0"/>
+                                <TextBlock Text=" - " Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding ReportVM.EndDate, StringFormat=dd.MM.yyyy}" 
+                               FontWeight="Bold" Margin="0,0,20,0"/>
+
+                                <TextBlock Text="Всего записей:" Margin="5,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ReportVM.PopularDishes.Count}" 
+                               FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <!-- Кнопка экспорта -->
+                            <Button Grid.Column="1" 
+                        Content="Экспорт в Excel" 
+                        Command="{Binding ReportVM.ExportToExcelCommand}"
+                        Margin="5" Padding="10,5" Width="120"/>
+
+                            <!-- Кнопка печати -->
+                            <Button Grid.Column="2" 
+                        Content="Печать отчета" 
+                        Margin="5" Padding="10,5" Width="120">
+                                <Button.ToolTip>
+                                    <ToolTip>
+                                        <TextBlock Text="Печать отчета по популярным блюдам"/>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                            </Button>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

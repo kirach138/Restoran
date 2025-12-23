@@ -1,0 +1,82 @@
+﻿<Window x:Class="WpfApp1.W_Order"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="Order" Height="450" Width="500">
+    <Grid Background="#402309">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" MinHeight="47.6"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel  Width="450">
+
+            <TextBlock Text="Заказ" 
+                                               Foreground="#F0E8CC"
+ HorizontalAlignment="Left" 
+Margin="10, 30, 10, 10"
+ />
+            <Grid>
+                <TextBlock Text="Наименование" 
+                                               Foreground="#F0E8CC"
+ HorizontalAlignment="Left" 
+                           VerticalAlignment="Top"
+Margin="10, 10, 10, 10"
+ />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Количество" 
+                                               Foreground="#F0E8CC"
+ HorizontalAlignment="Right" 
+Margin="10"
+ />
+                    <TextBlock Text="Цена" 
+                                               Foreground="#F0E8CC"
+  
+Margin="10"
+ />
+                </StackPanel>
+
+            </Grid>
+
+            <Grid>
+                <TextBlock Text="ИТОГО:" 
+                                               Foreground="#F0E8CC"
+ HorizontalAlignment="Left" 
+                           VerticalAlignment="Top"
+Margin="10, 10, 10, 10"
+ />
+                <TextBlock Text="Цена" 
+                                               Foreground="#F0E8CC"
+ HorizontalAlignment="Right" 
+                           VerticalAlignment="Top"
+Margin="10, 10, 10, 10"
+ />
+
+
+            </Grid>
+            <TextBlock Text="Введите адрес для доставки" 
+                                               Foreground="#F0E8CC"
+HorizontalAlignment="Center" 
+                           VerticalAlignment="Top"
+Margin="10, 10, 10, 10"
+ />
+            <TextBox Text="Адрес" 
+         
+        Height="25" 
+        Margin="5"/>
+            <Button Content="Заказать"
+                    Background="#F0E8CC"
+                    Foreground="#402309"
+    DockPanel.Dock="Bottom"
+    Margin="5, 100, 5, 5" 
+    Padding="10"
+    Width="200"
+    Height="50"
+   />
+        </StackPanel>
+
+    </Grid>
+</Window>
